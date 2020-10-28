@@ -3,9 +3,7 @@ package com.segment.analytics.android.integrations.appboy;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
-
 import androidx.test.core.app.ApplicationProvider;
-
 import com.appboy.AppboyUser;
 import com.appboy.IAppboy;
 import com.appboy.enums.Gender;
@@ -18,7 +16,7 @@ import com.segment.analytics.integrations.IdentifyPayload;
 import com.segment.analytics.integrations.Logger;
 import com.segment.analytics.integrations.ScreenPayload;
 import com.segment.analytics.integrations.TrackPayload;
-
+import java.math.BigDecimal;
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
@@ -26,8 +24,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.LooperMode;
-
-import java.math.BigDecimal;
 
 import static com.segment.analytics.Utils.createTraits;
 import static org.junit.Assert.assertEquals;
@@ -58,7 +54,7 @@ public class AppboyTest {
     when(mAppboy.getCurrentUser()).thenReturn(mAppboyUser);
     Logger logger = Logger.with(Analytics.LogLevel.DEBUG);
     when(mAnalytics.logger("Appboy")).thenReturn(logger);
-    mIntegration = new AppboyIntegration(mAppboy, "foo", logger, true, false, null);
+    mIntegration = new AppboyIntegration(getContext(), mAppboy, "foo", logger, true, false, null);
   }
 
   private Context getContext() {
@@ -145,7 +141,7 @@ public class AppboyTest {
     verify(mAppboyUser, Mockito.never()).setCustomUserAttribute("userId", "id1");
     verify(mAppboyUser, Mockito.never()).setCustomUserAttribute("anonymousId", "id2");
     verify(mAppboy, Mockito.times(1)).changeUser("userId");
-    verify(mAppboy, Mockito.times(12)).getCurrentUser();
+    verify(mAppboy, Mockito.times(1)).getCurrentUser();
   }
 
   @Test
@@ -235,8 +231,10 @@ public class AppboyTest {
     purchaseProperties.putProducts(new Properties.Product("id1", "sku1", 10), new Properties.Product("id2", "sku2", 12));
     TrackPayload trackPayload = getBasicTrackPayloadWithEventAndProps("Order Completed", purchaseProperties);
     mIntegration.track(trackPayload);
-    verify(mAppboy).logPurchase(Mockito.eq("id1"), Mockito.eq("USD"), Mockito.eq(new BigDecimal("10.0")), Mockito.any(AppboyProperties.class));
-    verify(mAppboy).logPurchase(Mockito.eq("id2"), Mockito.eq("USD"), Mockito.eq(new BigDecimal("12.0")), Mockito.any(AppboyProperties.class));
+    verify(mAppboy).logPurchase(Mockito.eq("id1"), Mockito.eq("USD"), Mockito.eq(new BigDecimal("10.0")),
+        Mockito.any(AppboyProperties.class));
+    verify(mAppboy).logPurchase(Mockito.eq("id2"), Mockito.eq("USD"), Mockito.eq(new BigDecimal("12.0")),
+        Mockito.any(AppboyProperties.class));
     verifyNoMoreAppboyInteractions();
   }
 
@@ -247,8 +245,10 @@ public class AppboyTest {
     purchaseProperties.putProducts(new Properties.Product("id1", "sku1", 10), new Properties.Product("id2", "sku2", 12));
     TrackPayload trackPayload = getBasicTrackPayloadWithEventAndProps("revenueEvent", purchaseProperties);
     mIntegration.track(trackPayload);
-    verify(mAppboy).logPurchase(Mockito.eq("id1"), Mockito.eq("USD"), Mockito.eq(new BigDecimal("10.0")), Mockito.any(AppboyProperties.class));
-    verify(mAppboy).logPurchase(Mockito.eq("id2"), Mockito.eq("USD"), Mockito.eq(new BigDecimal("12.0")), Mockito.any(AppboyProperties.class));
+    verify(mAppboy).logPurchase(Mockito.eq("id1"), Mockito.eq("USD"), Mockito.eq(new BigDecimal("10.0")),
+        Mockito.any(AppboyProperties.class));
+    verify(mAppboy).logPurchase(Mockito.eq("id2"), Mockito.eq("USD"), Mockito.eq(new BigDecimal("12.0")),
+        Mockito.any(AppboyProperties.class));
     verifyNoMoreAppboyInteractions();
   }
 

@@ -29,6 +29,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import org.json.JSONObject;
 
@@ -96,7 +97,8 @@ public class AppboyIntegration extends Integration<Appboy> {
   @Nullable
   private final TraitsCache mTraitsCache;
 
-  public AppboyIntegration(Appboy appboy,
+  public AppboyIntegration(Context context,
+      Appboy appboy,
       String token,
       Logger logger,
       boolean automaticInAppMessageRegistrationEnabled,
@@ -111,7 +113,8 @@ public class AppboyIntegration extends Integration<Appboy> {
   }
 
   @RestrictTo(RestrictTo.Scope.TESTS)
-  public AppboyIntegration(IAppboy appboy,
+  public AppboyIntegration(Context context,
+      IAppboy appboy,
       String token,
       Logger logger,
       boolean automaticInAppMessageRegistrationEnabled,
