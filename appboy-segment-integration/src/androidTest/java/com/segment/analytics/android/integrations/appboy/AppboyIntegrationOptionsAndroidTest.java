@@ -1,6 +1,7 @@
 package com.segment.analytics.android.integrations.appboy;
 
-import android.support.test.runner.AndroidJUnit4;
+import androidx.test.core.app.ApplicationProvider;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 import com.appboy.Appboy;
 import com.appboy.AppboyUser;
 import com.appboy.configuration.AppboyConfig;
@@ -17,8 +18,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import static android.support.test.InstrumentationRegistry.getContext;
-import static android.support.test.InstrumentationRegistry.getTargetContext;
 import static com.segment.analytics.Utils.createTraits;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -48,7 +47,7 @@ public class AppboyIntegrationOptionsAndroidTest {
   @BeforeClass
   public static void beforeClass() {
     AppboyConfig appboyConfig = new AppboyConfig.Builder().setApiKey("testkey").build();
-    Appboy.configure(getContext(), appboyConfig);
+    Appboy.configure(ApplicationProvider.getApplicationContext(), appboyConfig);
   }
 
   @Before
@@ -57,7 +56,7 @@ public class AppboyIntegrationOptionsAndroidTest {
 
     when(appboy.getCurrentUser()).thenReturn(appboyUser);
 
-    new PreferencesTraitsCache(getTargetContext()).clear();
+    new PreferencesTraitsCache(ApplicationProvider.getApplicationContext()).clear();
   }
 
   @Test
@@ -200,7 +199,7 @@ public class AppboyIntegrationOptionsAndroidTest {
   }
 
   private void givenIntegrationWithOptions(AppboyIntegrationOptions options) {
-    appboyIntegration = new AppboyIntegration(getTargetContext(), appboy,
+    appboyIntegration = new AppboyIntegration(ApplicationProvider.getApplicationContext(), appboy,
         "foo",
         Logger.with(Analytics.LogLevel.DEBUG),
         true,

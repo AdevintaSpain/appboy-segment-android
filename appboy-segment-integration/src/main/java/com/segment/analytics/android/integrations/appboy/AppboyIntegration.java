@@ -1,8 +1,11 @@
 package com.segment.analytics.android.integrations.appboy;
 
 import android.app.Activity;
-import android.support.annotation.Nullable;
-import android.support.annotation.VisibleForTesting;
+import android.content.Context;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.RestrictTo;
+import androidx.annotation.VisibleForTesting;
 import com.appboy.Appboy;
 import com.appboy.AppboyUser;
 import com.appboy.IAppboy;
