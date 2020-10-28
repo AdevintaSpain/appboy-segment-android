@@ -1,12 +1,11 @@
 package com.segment.analytics.android.integrations.appboy;
 
 import android.app.Activity;
-import android.content.Context;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 import com.appboy.Appboy;
 import com.appboy.AppboyUser;
+import com.appboy.IAppboy;
 import com.appboy.configuration.AppboyConfig;
 import com.appboy.enums.Gender;
 import com.appboy.enums.Month;
@@ -30,7 +29,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Set;
 import org.json.JSONObject;
 
@@ -74,10 +72,11 @@ public class AppboyIntegration extends Integration<Appboy> {
           builder.setCustomEndpoint(customEndpoint);
         }
 
-        Appboy.configure(analytics.getApplication().getApplicationContext(), builder.build());
-        Appboy appboy = Appboy.getInstance(analytics.getApplication());
+        final Context applicationContext = analytics.getApplication().getApplicationContext();
+        Appboy.configure(applicationContext, builder.build());
+        Appboy appboy = Appboy.getInstance(applicationContext);
         logger.verbose("Configured Appboy+Segment integration and initialized Appboy.");
-        return new AppboyIntegration(analytics.getApplication(), appboy, apiKey, logger, inAppMessageRegistrationEnabled,
+        return new AppboyIntegration(applicationContext, appboy, apiKey, logger, inAppMessageRegistrationEnabled,
             options.isTraitDiffingEnabled(), options.getUserIdMapper());
       }
 
@@ -88,7 +87,7 @@ public class AppboyIntegration extends Integration<Appboy> {
     };
   }
 
-  private final Appboy mAppboy;
+  private final IAppboy mAppboy;
   private final String mToken;
   private final Logger mLogger;
   private final boolean mAutomaticInAppMessageRegistrationEnabled;
@@ -97,7 +96,24 @@ public class AppboyIntegration extends Integration<Appboy> {
   @Nullable
   private final TraitsCache mTraitsCache;
 
-  public AppboyIntegration(Context context, Appboy appboy, String token, Logger logger,
+  public AppboyIntegration(Appboy appboy,
+      String token,
+      Logger logger,
+      boolean automaticInAppMessageRegistrationEnabled,
+      boolean enableTraitDiffing,
+      @Nullable UserIdMapper userIdMapper) {
+    mAppboy = appboy;
+    mToken = token;
+    mLogger = logger;
+    mAutomaticInAppMessageRegistrationEnabled = automaticInAppMessageRegistrationEnabled;
+    mUserIdMapper = userIdMapper != null ? userIdMapper : new DefaultUserIdMapper();
+    mTraitsCache = enableTraitDiffing ? new PreferencesTraitsCache(context) : null;
+  }
+
+  @RestrictTo(RestrictTo.Scope.TESTS)
+  public AppboyIntegration(IAppboy appboy,
+      String token,
+      Logger logger,
       boolean automaticInAppMessageRegistrationEnabled,
       boolean enableTraitDiffing,
       @Nullable UserIdMapper userIdMapper) {
@@ -115,7 +131,7 @@ public class AppboyIntegration extends Integration<Appboy> {
 
   @Override
   public Appboy getUnderlyingInstance() {
-    return mAppboy;
+    return (Appboy) mAppboy;
   }
 
   @Override
