@@ -1,6 +1,6 @@
 package com.segment.analytics.android.integrations.appboy;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 public class DefaultUserIdMapper implements UserIdMapper {
 
